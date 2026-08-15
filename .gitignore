@@ -1,0 +1,28 @@
+# Java / Maven
+target/
+*.jar
+*.war
+*.ear
+*.class
+
+# Node / Vite
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# IDEs / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
