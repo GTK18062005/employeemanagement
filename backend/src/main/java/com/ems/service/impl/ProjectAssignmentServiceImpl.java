@@ -134,6 +134,61 @@ public class ProjectAssignmentServiceImpl implements ProjectAssignmentService {
         
         return project;
     }
+
+    @Override
+    @Transactional
+    public ProjectAssignmentResponse adminAssignEmployee(Long projectId, ProjectAssignmentCreateRequest request) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
+
+        Employee employee = employeeRepository.findById(request.getEmployeeId())
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+        ProjectAssignment existing = projectAssignmentRepository.findByProjectIdAndEmployeeId(projectId, request.getEmployeeId())
+                .orElse(null);
+
+        if (existing != null) {
+            if (existing.getStatus() == ProjectAssignmentStatus.ACTIVE) {
+                throw new DuplicateResourceException("Employee is already assigned to this project");
+            } else {
+                existing.setStatus(ProjectAssignmentStatus.ACTIVE);
+                existing.setAssignedDate(request.getAssignedDate());
+                return mapToResponse(projectAssignmentRepository.save(existing));
+            }
+        }
+
+        ProjectAssignment assignment = new ProjectAssignment();
+        assignment.setProject(project);
+        assignment.setEmployee(employee);
+        assignment.setAssignedDate(request.getAssignedDate());
+        assignment.setStatus(ProjectAssignmentStatus.ACTIVE);
+
+        return mapToResponse(projectAssignmentRepository.save(assignment));
+    }
+
+    @Override
+    @Transactional
+    public void adminRemoveEmployee(Long projectId, Long employeeId) {
+        projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
+
+        ProjectAssignment assignment = projectAssignmentRepository.findByProjectIdAndEmployeeId(projectId, employeeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project assignment not found"));
+
+        assignment.setStatus(ProjectAssignmentStatus.REMOVED);
+        projectAssignmentRepository.save(assignment);
+    }
+
+    @Override
+    public List<ProjectAssignmentResponse> adminGetProjectTeam(Long projectId) {
+        projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
+
+        return projectAssignmentRepository.findByProjectId(projectId).stream()
+                .filter(a -> a.getStatus() == ProjectAssignmentStatus.ACTIVE)
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
     
     private Employee getEmployeeProfile(String username) {
         return employeeRepository.findByUserUsername(username)

@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Plus } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Plus, Search } from 'lucide-react';
 import Alert from '../../components/ui/Alert';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
@@ -23,6 +23,7 @@ function AdminSalaryPage() {
   const [error, setError] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [search, setSearch] = useState('');
   const [form, setForm] = useState({
     employeeId: '',
     month: '',
@@ -55,6 +56,16 @@ function AdminSalaryPage() {
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return salaries;
+    return salaries.filter((s) => {
+      const name = (s.employeeName ?? '').toLowerCase();
+      const period = formatMonthYear(s.month, s.year).toLowerCase();
+      return name.includes(q) || period.includes(q);
+    });
+  }, [salaries, search]);
 
   function handleFormChange(event) {
     const { name, value } = event.target;
@@ -116,6 +127,24 @@ function AdminSalaryPage() {
         </Alert>
       ) : null}
 
+      <div className="filter-bar">
+        <div className="search-input-wrapper">
+          <Search size={16} className="search-icon" />
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Search by employee name or period…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        {search ? (
+          <Button variant="secondary" size="sm" onClick={() => setSearch('')}>
+            Clear
+          </Button>
+        ) : null}
+      </div>
+
       {loading ? (
         <LoadingState title="Loading salaries" description="Fetching salary records." />
       ) : error && !salaries.length ? (
@@ -123,9 +152,9 @@ function AdminSalaryPage() {
       ) : (
         <DataTable
           columns={columns}
-          data={salaries}
+          data={filtered}
           emptyTitle="No salary records"
-          emptyDescription="Create a salary record to get started."
+          emptyDescription={search ? 'No salary records match your search.' : 'Create a salary record to get started.'}
         />
       )}
 

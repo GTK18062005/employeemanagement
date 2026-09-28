@@ -14,6 +14,30 @@ export function formatDateTime(value) {
   return new Date(value).toLocaleString();
 }
 
+export function formatTime(value) {
+  if (!value) {
+    return '—';
+  }
+
+  if (typeof value === 'string' && (value.includes('AM') || value.includes('PM'))) {
+    return value;
+  }
+
+  try {
+    const d = new Date(value);
+    if (!Number.isNaN(d.getTime())) {
+      return d.toLocaleTimeString(undefined, {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    }
+  } catch {
+    // fallback
+  }
+
+  return String(value);
+}
+
 export function formatRole(role) {
   const labels = {
     ADMIN: 'Admin',

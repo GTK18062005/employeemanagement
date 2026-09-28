@@ -11,6 +11,7 @@ export const NAVIGATION_ITEMS = {
     { label: 'Leave', path: ADMIN_ROUTES.LEAVE, icon: 'CalendarOff' },
     { label: 'Salary', path: ADMIN_ROUTES.SALARY, icon: 'Wallet' },
     { label: 'Parking', path: ADMIN_ROUTES.PARKING, icon: 'Car' },
+    { label: 'Analytics', path: ADMIN_ROUTES.ANALYTICS, icon: 'BarChart2' },
   ],
   [ROLES.PROJECT_MANAGER]: [
     { label: 'Dashboard', path: MANAGER_ROUTES.DASHBOARD, icon: 'LayoutDashboard' },
@@ -28,6 +29,7 @@ export const NAVIGATION_ITEMS = {
     { label: 'Leave', path: EMPLOYEE_ROUTES.LEAVE, icon: 'CalendarOff' },
     { label: 'Salary', path: EMPLOYEE_ROUTES.SALARY, icon: 'Wallet' },
     { label: 'Parking', path: EMPLOYEE_ROUTES.PARKING, icon: 'Car' },
+    { label: 'Analytics', path: EMPLOYEE_ROUTES.ANALYTICS, icon: 'BarChart2' },
   ],
 };
 

@@ -39,6 +39,40 @@ export async function markEmployeeAttendance(payload) {
   return data;
 }
 
+export async function checkInEmployee(workMode = 'OFFICE') {
+  const { data } = await api.post('/employee/attendance/check-in', null, {
+    params: { workMode },
+  });
+  return data;
+}
+
+export async function updateTodayWorkMode(workMode) {
+  const { data } = await api.put('/employee/attendance/today/work-mode', null, {
+    params: { workMode },
+  });
+  return data;
+}
+
+export async function addTodayBreak(payload) {
+  const { data } = await api.post('/employee/attendance/today/breaks', payload);
+  return data;
+}
+
+export async function deleteTodayBreak(breakId) {
+  const { data } = await api.delete(`/employee/attendance/today/breaks/${breakId}`);
+  return data;
+}
+
+export async function checkOutEmployee() {
+  const { data } = await api.post('/employee/attendance/check-out');
+  return data;
+}
+
+export async function getTodayEmployeeAttendance() {
+  const { data } = await api.get('/employee/attendance/today');
+  return data;
+}
+
 export async function getEmployeeAttendance() {
   const { data } = await api.get('/employee/attendance');
   return data;

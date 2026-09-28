@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Search } from 'lucide-react';
 import LeaveStatusBadge from '../../components/leave/LeaveStatusBadge';
 import Alert from '../../components/ui/Alert';
 import Button from '../../components/ui/Button';
@@ -27,6 +28,7 @@ function AdminLeavePage() {
   const [rejectAction, setRejectAction] = useState(null);
   const [rejectReason, setRejectReason] = useState('');
   const [processing, setProcessing] = useState(false);
+  const [search, setSearch] = useState('');
 
   const loadLeaves = useCallback(async () => {
     setLoading(true);
@@ -46,6 +48,18 @@ function AdminLeavePage() {
   useEffect(() => {
     loadLeaves();
   }, [loadLeaves]);
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return leaves;
+    return leaves.filter((l) => {
+      const name = (l.employeeName ?? '').toLowerCase();
+      const code = (l.employeeCode ?? '').toLowerCase();
+      const type = (l.leaveType ?? '').toLowerCase();
+      const status = (l.status ?? '').toLowerCase();
+      return name.includes(q) || code.includes(q) || type.includes(q) || status.includes(q);
+    });
+  }, [leaves, search]);
 
   async function handleApprove() {
     if (!approveAction) return;
@@ -154,6 +168,24 @@ function AdminLeavePage() {
         </Alert>
       ) : null}
 
+      <div className="filter-bar">
+        <div className="search-input-wrapper">
+          <Search size={16} className="search-icon" />
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Search by employee name, code, type or status…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        {search ? (
+          <Button variant="secondary" size="sm" onClick={() => setSearch('')}>
+            Clear
+          </Button>
+        ) : null}
+      </div>
+
       {loading ? (
         <LoadingState title="Loading leaves" description="Fetching leave requests." />
       ) : error && !leaves.length ? (
@@ -161,9 +193,9 @@ function AdminLeavePage() {
       ) : (
         <DataTable
           columns={columns}
-          data={leaves}
+          data={filtered}
           emptyTitle="No leave requests"
-          emptyDescription="No leave requests to display."
+          emptyDescription={search ? 'No leave requests match your search.' : 'No leave requests to display.'}
         />
       )}
 

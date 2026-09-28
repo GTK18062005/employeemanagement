@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, Pencil } from 'lucide-react';
+import { ArrowLeft, Pencil, BarChart2 } from 'lucide-react';
 import Alert from '../../components/ui/Alert';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
@@ -66,9 +66,16 @@ function AdminEmployeeDetailsPage() {
           </Button>
         </Link>
         {employee ? (
-          <Button icon={Pencil} size="sm" onClick={() => setShowEditForm(true)}>
-            Edit
-          </Button>
+          <>
+            <Link to={`${ADMIN_ROUTES.EMPLOYEES}/${employeeId}/analytics`}>
+              <Button variant="secondary" icon={BarChart2} size="sm">
+                Analytics
+              </Button>
+            </Link>
+            <Button icon={Pencil} size="sm" onClick={() => setShowEditForm(true)}>
+              Edit
+            </Button>
+          </>
         ) : null}
       </PageHeader>
 

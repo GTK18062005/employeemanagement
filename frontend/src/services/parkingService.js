@@ -26,7 +26,11 @@ export async function getAdminParkingAllocationById(allocationId) {
 }
 
 export async function createAdminParkingAllocation(payload) {
-  const { data } = await api.post('/admin/parking/allocations', payload);
+  // Backend DTO expects `parkingSlotId`, not `slotId`
+  const { data } = await api.post('/admin/parking/allocations', {
+    employeeId: payload.employeeId,
+    parkingSlotId: payload.slotId ?? payload.parkingSlotId,
+  });
   return data;
 }
 
@@ -36,11 +40,21 @@ export async function releaseAdminParkingAllocation(allocationId) {
 }
 
 export async function getManagerParking() {
-  const { data } = await api.get('/manager/parking');
-  return data;
+  try {
+    const { data } = await api.get('/manager/parking');
+    return Array.isArray(data) ? data : data ? [data] : [];
+  } catch (err) {
+    if (err.response?.status === 404) return [];
+    throw err;
+  }
 }
 
 export async function getEmployeeParking() {
-  const { data } = await api.get('/employee/parking');
-  return data;
+  try {
+    const { data } = await api.get('/employee/parking');
+    return Array.isArray(data) ? data : data ? [data] : [];
+  } catch (err) {
+    if (err.response?.status === 404) return [];
+    throw err;
+  }
 }

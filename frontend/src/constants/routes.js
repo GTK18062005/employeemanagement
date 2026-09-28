@@ -15,6 +15,7 @@ export const ADMIN_ROUTES = {
   LEAVE: `${ROUTES.ADMIN}/leave`,
   SALARY: `${ROUTES.ADMIN}/salary`,
   PARKING: `${ROUTES.ADMIN}/parking`,
+  ANALYTICS: `${ROUTES.ADMIN}/analytics`,
 };
 
 export const MANAGER_ROUTES = {
@@ -24,6 +25,7 @@ export const MANAGER_ROUTES = {
   ATTENDANCE: `${ROUTES.MANAGER}/attendance`,
   LEAVE: `${ROUTES.MANAGER}/leave`,
   PARKING: `${ROUTES.MANAGER}/parking`,
+  TEAM_ANALYTICS: `${ROUTES.MANAGER}/team`,
 };
 
 export const EMPLOYEE_ROUTES = {
@@ -34,4 +36,5 @@ export const EMPLOYEE_ROUTES = {
   LEAVE: `${ROUTES.EMPLOYEE}/leave`,
   SALARY: `${ROUTES.EMPLOYEE}/salary`,
   PARKING: `${ROUTES.EMPLOYEE}/parking`,
+  ANALYTICS: `${ROUTES.EMPLOYEE}/analytics`,
 };

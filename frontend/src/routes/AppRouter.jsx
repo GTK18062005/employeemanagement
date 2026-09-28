@@ -14,6 +14,8 @@ import AdminProjectDetailsPage from '../pages/admin/AdminProjectDetailsPage';
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import AdminSalaryPage from '../pages/admin/AdminSalaryPage';
 import AdminParkingPage from '../pages/admin/AdminParkingPage';
+import AdminAnalyticsPage from '../pages/admin/AdminAnalyticsPage';
+import AdminEmployeeAnalyticsPage from '../pages/admin/AdminEmployeeAnalyticsPage';
 import EmployeeAttendancePage from '../pages/employee/EmployeeAttendancePage';
 import EmployeeLeavePage from '../pages/employee/EmployeeLeavePage';
 import EmployeeDashboard from '../pages/employee/EmployeeDashboard';
@@ -22,6 +24,7 @@ import EmployeeProjectDetailsPage from '../pages/employee/EmployeeProjectDetails
 import EmployeeProjectsPage from '../pages/employee/EmployeeProjectsPage';
 import EmployeeSalaryPage from '../pages/employee/EmployeeSalaryPage';
 import EmployeeParkingPage from '../pages/employee/EmployeeParkingPage';
+import EmployeeAnalyticsPage from '../pages/employee/EmployeeAnalyticsPage';
 import ManagerAttendancePage from '../pages/manager/ManagerAttendancePage';
 import ManagerLeavePage from '../pages/manager/ManagerLeavePage';
 import ManagerDashboard from '../pages/manager/ManagerDashboard';
@@ -29,6 +32,7 @@ import ManagerProjectDetailsPage from '../pages/manager/ManagerProjectDetailsPag
 import ManagerProjectsPage from '../pages/manager/ManagerProjectsPage';
 import ManagerTeamPage from '../pages/manager/ManagerTeamPage';
 import ManagerParkingPage from '../pages/manager/ManagerParkingPage';
+import ManagerEmployeeAnalyticsPage from '../pages/manager/ManagerEmployeeAnalyticsPage';
 import ProtectedRoute from './ProtectedRoute';
 import RoleRoute from './RoleRoute';
 import LoadingState from '../components/common/LoadingState';
@@ -73,12 +77,14 @@ function AppRouter() {
               <Route path="users" element={<AdminUsersPage />} />
               <Route path="employees" element={<AdminEmployeesPage />} />
               <Route path="employees/:employeeId" element={<AdminEmployeeDetailsPage />} />
+              <Route path="employees/:employeeId/analytics" element={<AdminEmployeeAnalyticsPage />} />
               <Route path="projects" element={<AdminProjectsPage />} />
               <Route path="projects/:projectId" element={<AdminProjectDetailsPage />} />
               <Route path="attendance" element={<AdminAttendancePage />} />
               <Route path="leave" element={<AdminLeavePage />} />
               <Route path="salary" element={<AdminSalaryPage />} />
               <Route path="parking" element={<AdminParkingPage />} />
+              <Route path="analytics" element={<AdminAnalyticsPage />} />
             </Route>
           </Route>
 
@@ -88,6 +94,7 @@ function AppRouter() {
               <Route path="projects" element={<ManagerProjectsPage />} />
               <Route path="projects/:projectId" element={<ManagerProjectDetailsPage />} />
               <Route path="team" element={<ManagerTeamPage />} />
+              <Route path="team/:employeeId/analytics" element={<ManagerEmployeeAnalyticsPage />} />
               <Route path="attendance" element={<ManagerAttendancePage />} />
               <Route path="leave" element={<ManagerLeavePage />} />
               <Route path="parking" element={<ManagerParkingPage />} />
@@ -104,6 +111,7 @@ function AppRouter() {
               <Route path="leave" element={<EmployeeLeavePage />} />
               <Route path="salary" element={<EmployeeSalaryPage />} />
               <Route path="parking" element={<EmployeeParkingPage />} />
+              <Route path="analytics" element={<EmployeeAnalyticsPage />} />
             </Route>
           </Route>
         </Route>

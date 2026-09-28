@@ -46,6 +46,14 @@ public class Attendance extends BaseEntity {
     @Column(nullable = false)
     private AttendanceStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "work_mode", length = 32)
+    private WorkMode workMode = WorkMode.OFFICE;
+
+    @jakarta.persistence.OneToMany(mappedBy = "attendance", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @jakarta.persistence.OrderBy("startTime ASC")
+    private java.util.List<AttendanceBreak> breaks = new java.util.ArrayList<>();
+
     // Getters and Setters
 
     public Long getId() {
@@ -102,5 +110,31 @@ public class Attendance extends BaseEntity {
 
     public void setStatus(AttendanceStatus status) {
         this.status = status;
+    }
+
+    public WorkMode getWorkMode() {
+        return workMode != null ? workMode : WorkMode.OFFICE;
+    }
+
+    public void setWorkMode(WorkMode workMode) {
+        this.workMode = workMode;
+    }
+
+    public java.util.List<AttendanceBreak> getBreaks() {
+        return breaks;
+    }
+
+    public void setBreaks(java.util.List<AttendanceBreak> breaks) {
+        this.breaks = breaks;
+    }
+
+    public void addBreak(AttendanceBreak attendanceBreak) {
+        breaks.add(attendanceBreak);
+        attendanceBreak.setAttendance(this);
+    }
+
+    public void removeBreak(AttendanceBreak attendanceBreak) {
+        breaks.remove(attendanceBreak);
+        attendanceBreak.setAttendance(null);
     }
 }

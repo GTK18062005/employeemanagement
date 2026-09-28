@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import AttendanceStatusBadge from '../../components/attendance/AttendanceStatusBadge';
+import { AttendanceBreaksCell, WorkModeBadge } from '../../components/attendance/AttendanceBreaksCell';
 import Alert from '../../components/ui/Alert';
 import Button from '../../components/ui/Button';
 import DataTable from '../../components/ui/DataTable';
@@ -9,7 +10,7 @@ import ErrorState from '../../components/common/ErrorState';
 import LoadingState from '../../components/common/LoadingState';
 import { getManagerAttendance } from '../../services/attendanceService';
 import { getErrorMessage } from '../../utils/apiError';
-import { formatDate, formatDateTime } from '../../utils/formatters';
+import { formatDate, formatDateTime, formatTime } from '../../utils/formatters';
 
 function ManagerAttendancePage() {
   const [records, setRecords] = useState([]);
@@ -48,6 +49,37 @@ function ManagerAttendancePage() {
       key: 'status',
       header: 'Status',
       render: (record) => <AttendanceStatusBadge status={record.status} />,
+    },
+    {
+      key: 'workMode',
+      header: 'Mode',
+      render: (record) => <WorkModeBadge mode={record.workMode} />,
+    },
+    {
+      key: 'checkIn',
+      header: 'Check In',
+      render: (record) => record.checkInTime ?? formatTime(record.checkIn),
+    },
+    {
+      key: 'checkOut',
+      header: 'Check Out',
+      render: (record) => record.checkOutTime ?? formatTime(record.checkOut),
+    },
+    {
+      key: 'totalHours',
+      header: 'Total Hours',
+      render: (record) => (record.totalHours ? `${record.totalHours} hrs` : '—'),
+    },
+    {
+      key: 'breaks',
+      header: 'Break Timings',
+      render: (record) => (
+        <AttendanceBreaksCell
+          breaks={record.breaks}
+          employeeName={record.employeeName}
+          date={record.date}
+        />
+      ),
     },
     {
       key: 'updatedAt',

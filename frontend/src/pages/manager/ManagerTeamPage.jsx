@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { UsersRound, UserPlus, Trash2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { UsersRound, UserPlus, Trash2, BarChart2 } from 'lucide-react';
 import EmptyState from '../../components/common/EmptyState';
 import ErrorState from '../../components/common/ErrorState';
 import LoadingState from '../../components/common/LoadingState';
@@ -15,6 +16,7 @@ import Alert from '../../components/ui/Alert';
 import { useToast } from '../../context/ToastContext';
 import { getErrorMessage } from '../../utils/apiError';
 import { formatDate } from '../../utils/formatters';
+import { MANAGER_ROUTES } from '../../constants/routes';
 import {
   getManagerProjects,
   getManagerProjectTeam,
@@ -134,15 +136,24 @@ function ManagerTeamPage() {
       key: 'actions',
       header: 'Actions',
       render: (member) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          icon={Trash2}
-          onClick={() => handleRemove(member.employeeId)}
-          title="Remove employee"
-          aria-label="Remove employee"
-          className="text-error"
-        />
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <Link
+            to={`${MANAGER_ROUTES.TEAM_ANALYTICS}/${member.employeeId}/analytics`}
+            className="text-link"
+            title="View analytics"
+          >
+            <BarChart2 size={16} />
+          </Link>
+          <Button
+            variant="ghost"
+            size="sm"
+            icon={Trash2}
+            onClick={() => handleRemove(member.employeeId)}
+            title="Remove employee"
+            aria-label="Remove employee"
+            className="text-error"
+          />
+        </div>
       ),
     },
   ];

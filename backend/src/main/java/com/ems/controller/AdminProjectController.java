@@ -1,10 +1,13 @@
 package com.ems.controller;
 
+import com.ems.dto.request.ProjectAssignmentCreateRequest;
 import com.ems.dto.request.ProjectCreateRequest;
 import com.ems.dto.request.ProjectManagerChangeRequest;
 import com.ems.dto.request.ProjectStatusRequest;
 import com.ems.dto.request.ProjectUpdateRequest;
+import com.ems.dto.response.ProjectAssignmentResponse;
 import com.ems.dto.response.ProjectResponse;
+import com.ems.service.ProjectAssignmentService;
 import com.ems.service.ProjectService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -18,9 +21,11 @@ import java.util.List;
 public class AdminProjectController {
 
     private final ProjectService projectService;
+    private final ProjectAssignmentService projectAssignmentService;
 
-    public AdminProjectController(ProjectService projectService) {
+    public AdminProjectController(ProjectService projectService, ProjectAssignmentService projectAssignmentService) {
         this.projectService = projectService;
+        this.projectAssignmentService = projectAssignmentService;
     }
 
     @PostMapping
@@ -52,4 +57,27 @@ public class AdminProjectController {
     public ResponseEntity<ProjectResponse> changeProjectStatus(@PathVariable Long id, @Valid @RequestBody ProjectStatusRequest request) {
         return ResponseEntity.ok(projectService.changeProjectStatus(id, request));
     }
+
+    // Team management endpoints
+    @GetMapping("/{projectId}/employees")
+    public ResponseEntity<List<ProjectAssignmentResponse>> getProjectTeam(@PathVariable Long projectId) {
+        return ResponseEntity.ok(projectAssignmentService.adminGetProjectTeam(projectId));
+    }
+
+    @PostMapping("/{projectId}/employees")
+    public ResponseEntity<ProjectAssignmentResponse> assignEmployee(
+            @PathVariable Long projectId,
+            @Valid @RequestBody ProjectAssignmentCreateRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(projectAssignmentService.adminAssignEmployee(projectId, request));
+    }
+
+    @DeleteMapping("/{projectId}/employees/{employeeId}")
+    public ResponseEntity<Void> removeEmployee(
+            @PathVariable Long projectId,
+            @PathVariable Long employeeId) {
+        projectAssignmentService.adminRemoveEmployee(projectId, employeeId);
+        return ResponseEntity.ok().build();
+    }
 }
+

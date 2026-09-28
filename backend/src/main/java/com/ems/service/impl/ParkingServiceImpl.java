@@ -53,6 +53,7 @@ public class ParkingServiceImpl implements ParkingService {
         response.setAllocationId(allocation.getId());
         response.setParkingSlotId(allocation.getParkingSlot().getId());
         response.setSlotNumber(allocation.getParkingSlot().getSlotNumber());
+        response.setLocation(allocation.getParkingSlot().getLocation());
         response.setEmployeeId(allocation.getEmployee().getId());
         response.setEmployeeName(allocation.getEmployee().getFirstName() + " " + allocation.getEmployee().getLastName());
         response.setAllocatedDate(allocation.getAllocatedDate());

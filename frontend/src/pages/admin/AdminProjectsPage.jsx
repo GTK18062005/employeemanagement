@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus } from 'lucide-react';
+import { Plus, Search, X } from 'lucide-react';
 import ProjectStatusBadge from '../../components/projects/ProjectStatusBadge';
 import Alert from '../../components/ui/Alert';
 import Button from '../../components/ui/Button';
@@ -27,6 +27,7 @@ function AdminProjectsPage() {
   const [error, setError] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [search, setSearch] = useState('');
 
   const loadProjects = useCallback(async () => {
     setLoading(true);
@@ -38,7 +39,6 @@ function AdminProjectsPage() {
         getAllEmployees().catch(() => []),
       ]);
       setProjects(projectsData);
-      // Filter employees who could be project managers (all employees are potential managers)
       setProjectManagers(employees);
     } catch (loadError) {
       setProjects([]);
@@ -51,6 +51,23 @@ function AdminProjectsPage() {
   useEffect(() => {
     loadProjects();
   }, [loadProjects]);
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return projects;
+    return projects.filter((p) => {
+      const name = (p.name ?? '').toLowerCase();
+      const manager = (p.managerName ?? '').toLowerCase();
+      const status = (p.status ?? '').toLowerCase();
+      const description = (p.description ?? '').toLowerCase();
+      return (
+        name.includes(q) ||
+        manager.includes(q) ||
+        status.includes(q) ||
+        description.includes(q)
+      );
+    });
+  }, [projects, search]);
 
   async function handleCreateProject(formData) {
     setSubmitting(true);
@@ -116,6 +133,36 @@ function AdminProjectsPage() {
         </Alert>
       ) : null}
 
+      <div className="filter-bar">
+        <div className="search-input-wrapper">
+          <Search size={16} className="search-icon" />
+          <input
+            id="projects-search"
+            type="text"
+            className="search-input"
+            placeholder="Search by project name, manager, status or description…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            aria-label="Search projects"
+          />
+          {search ? (
+            <button
+              className="search-clear-btn"
+              onClick={() => setSearch('')}
+              aria-label="Clear search"
+              type="button"
+            >
+              <X size={14} />
+            </button>
+          ) : null}
+        </div>
+        {!loading && (
+          <span className="search-result-count">
+            {filtered.length} of {projects.length} project{projects.length !== 1 ? 's' : ''}
+          </span>
+        )}
+      </div>
+
       {loading ? (
         <LoadingState title="Loading projects" description="Fetching projects." />
       ) : error && !projects.length ? (
@@ -123,9 +170,9 @@ function AdminProjectsPage() {
       ) : (
         <DataTable
           columns={columns}
-          data={projects}
+          data={filtered}
           emptyTitle="No projects found"
-          emptyDescription="Create a project to get started."
+          emptyDescription={search ? 'No projects match your search.' : 'Create a project to get started.'}
         />
       )}
 

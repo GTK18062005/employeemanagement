@@ -21,8 +21,7 @@ function EmployeeParkingPage() {
 
     try {
       const data = await getEmployeeParking();
-      const list = Array.isArray(data) ? data : data ? [data] : [];
-      setAllocations(list);
+      setAllocations(data);
     } catch (loadError) {
       setAllocations([]);
       setError(getErrorMessage(loadError, 'Failed to load parking information.'));

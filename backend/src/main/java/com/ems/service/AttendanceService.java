@@ -9,6 +9,13 @@ import java.util.List;
 public interface AttendanceService {
     // Employee methods
     AttendanceResponse markAttendance(String username, CreateAttendanceRequest request);
+    AttendanceResponse checkIn(String username);
+    AttendanceResponse checkIn(String username, com.ems.entity.WorkMode workMode);
+    AttendanceResponse updateWorkMode(String username, com.ems.entity.WorkMode workMode);
+    AttendanceResponse addBreak(String username, com.ems.dto.request.AddBreakRequest request);
+    AttendanceResponse removeBreak(String username, Long breakId);
+    AttendanceResponse checkOut(String username);
+    AttendanceResponse getTodayAttendance(String username);
     List<AttendanceResponse> getMyAttendance(String username);
     AttendanceResponse getMyAttendanceByDate(String username, LocalDate date);
     

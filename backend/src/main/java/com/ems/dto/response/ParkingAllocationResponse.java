@@ -9,6 +9,7 @@ public class ParkingAllocationResponse {
     private Long allocationId;
     private Long parkingSlotId;
     private String slotNumber;
+    private String location;
     private Long employeeId;
     private String employeeName;
     private LocalDate allocatedDate;
@@ -38,6 +39,14 @@ public class ParkingAllocationResponse {
 
     public void setSlotNumber(String slotNumber) {
         this.slotNumber = slotNumber;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public Long getEmployeeId() {

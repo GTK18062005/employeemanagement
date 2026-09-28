@@ -29,6 +29,45 @@ public class EmployeeAttendanceController {
                 .body(attendanceService.markAttendance(principal.getName(), request));
     }
 
+    @PostMapping("/check-in")
+    public ResponseEntity<AttendanceResponse> checkIn(
+            @RequestParam(required = false, defaultValue = "OFFICE") com.ems.entity.WorkMode workMode,
+            Principal principal) {
+        return ResponseEntity.ok(attendanceService.checkIn(principal.getName(), workMode));
+    }
+
+    @PutMapping("/today/work-mode")
+    public ResponseEntity<AttendanceResponse> updateWorkMode(
+            @RequestParam com.ems.entity.WorkMode workMode,
+            Principal principal) {
+        return ResponseEntity.ok(attendanceService.updateWorkMode(principal.getName(), workMode));
+    }
+
+    @PostMapping("/today/breaks")
+    public ResponseEntity<AttendanceResponse> addBreak(
+            @Valid @RequestBody com.ems.dto.request.AddBreakRequest request,
+            Principal principal) {
+        return ResponseEntity.ok(attendanceService.addBreak(principal.getName(), request));
+    }
+
+    @DeleteMapping("/today/breaks/{breakId}")
+    public ResponseEntity<AttendanceResponse> deleteBreak(
+            @PathVariable Long breakId,
+            Principal principal) {
+        return ResponseEntity.ok(attendanceService.removeBreak(principal.getName(), breakId));
+    }
+
+    @PostMapping("/check-out")
+    public ResponseEntity<AttendanceResponse> checkOut(Principal principal) {
+        return ResponseEntity.ok(attendanceService.checkOut(principal.getName()));
+    }
+
+    @GetMapping("/today")
+    public ResponseEntity<AttendanceResponse> getTodayAttendance(Principal principal) {
+        AttendanceResponse today = attendanceService.getTodayAttendance(principal.getName());
+        return ResponseEntity.ok(today);
+    }
+
     @GetMapping
     public ResponseEntity<List<AttendanceResponse>> getMyAttendance(Principal principal) {
         return ResponseEntity.ok(attendanceService.getMyAttendance(principal.getName()));

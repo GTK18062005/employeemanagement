@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Plus } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Car, Plus, Search, X } from 'lucide-react';
 import ParkingSlotStatusBadge from '../../components/parking/ParkingSlotStatusBadge';
 import ParkingAllocationStatusBadge from '../../components/parking/ParkingAllocationStatusBadge';
 import Alert from '../../components/ui/Alert';
@@ -31,6 +31,7 @@ function AdminParkingPage() {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
 
   // Create slot
   const [showSlotForm, setShowSlotForm] = useState(false);
@@ -71,6 +72,28 @@ function AdminParkingPage() {
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  const filteredSlots = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return slots;
+    return slots.filter((s) => {
+      const num = (s.slotNumber ?? '').toLowerCase();
+      const loc = (s.location ?? '').toLowerCase();
+      const status = (s.status ?? '').toLowerCase();
+      return num.includes(q) || loc.includes(q) || status.includes(q);
+    });
+  }, [slots, search]);
+
+  const filteredAllocations = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return allocations;
+    return allocations.filter((a) => {
+      const name = (a.employeeName ?? '').toLowerCase();
+      const slot = (a.slotNumber ?? '').toLowerCase();
+      const status = (a.status ?? '').toLowerCase();
+      return name.includes(q) || slot.includes(q) || status.includes(q);
+    });
+  }, [allocations, search]);
 
   async function handleCreateSlot(event) {
     event.preventDefault();
@@ -134,15 +157,15 @@ function AdminParkingPage() {
 
   const allocationColumns = [
     { key: 'employeeName', header: 'Employee', render: (a) => a.employeeName ?? `Employee #${a.employeeId}` },
-    { key: 'slotNumber', header: 'Slot', render: (a) => a.slotNumber ?? `Slot #${a.slotId}` },
+    { key: 'slotNumber', header: 'Slot', render: (a) => a.slotNumber ?? `Slot #${a.parkingSlotId}` },
     { key: 'status', header: 'Status', render: (a) => <ParkingAllocationStatusBadge status={a.status} /> },
-    { key: 'createdAt', header: 'Allocated', render: (a) => formatDateTime(a.createdAt) },
+    { key: 'allocatedDate', header: 'Date', render: (a) => a.allocatedDate ?? formatDateTime(a.createdAt) },
     {
       key: 'actions',
       header: 'Actions',
       render: (a) =>
         a.status === 'APPROVED' || a.status === 'REQUESTED' ? (
-          <Button variant="danger" size="sm" onClick={() => setReleaseAction({ id: a.id })}>
+          <Button variant="danger" size="sm" onClick={() => setReleaseAction({ id: a.allocationId ?? a.id })}>
             Release
           </Button>
         ) : '—',
@@ -168,18 +191,51 @@ function AdminParkingPage() {
         </Alert>
       ) : null}
 
+      <div className="filter-bar">
+        <div className="search-input-wrapper">
+          <Search size={16} className="search-icon" />
+          <input
+            id="parking-search"
+            type="text"
+            className="search-input"
+            placeholder={activeTab === 'slots' ? 'Search by slot #, location or status…' : 'Search by employee, slot or status…'}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            aria-label="Search parking"
+          />
+          {search ? (
+            <button
+              className="search-clear-btn"
+              onClick={() => setSearch('')}
+              aria-label="Clear search"
+              type="button"
+            >
+              <X size={14} />
+            </button>
+          ) : null}
+        </div>
+        {!loading && (
+          <span className="search-result-count">
+            {activeTab === 'slots'
+              ? `${filteredSlots.length} of ${slots.length} slot${slots.length !== 1 ? 's' : ''}`
+              : `${filteredAllocations.length} of ${allocations.length} allocation${allocations.length !== 1 ? 's' : ''}`
+            }
+          </span>
+        )}
+      </div>
+
       <div className="tabs">
         <button
           type="button"
           className={`tabs__tab${activeTab === 'slots' ? ' tabs__tab--active' : ''}`}
-          onClick={() => setActiveTab('slots')}
+          onClick={() => { setActiveTab('slots'); setSearch(''); }}
         >
           Slots ({slots.length})
         </button>
         <button
           type="button"
           className={`tabs__tab${activeTab === 'allocations' ? ' tabs__tab--active' : ''}`}
-          onClick={() => setActiveTab('allocations')}
+          onClick={() => { setActiveTab('allocations'); setSearch(''); }}
         >
           Allocations ({allocations.length})
         </button>
@@ -190,9 +246,9 @@ function AdminParkingPage() {
       ) : error && !slots.length && !allocations.length ? (
         <ErrorState description={error} onRetry={loadData} />
       ) : activeTab === 'slots' ? (
-        <DataTable columns={slotColumns} data={slots} emptyTitle="No parking slots" emptyDescription="Add a parking slot to get started." />
+        <DataTable columns={slotColumns} data={filteredSlots} emptyTitle="No parking slots" emptyDescription="Add a parking slot to get started." />
       ) : (
-        <DataTable columns={allocationColumns} data={allocations} emptyTitle="No allocations" emptyDescription="Create an allocation to assign a slot." />
+        <DataTable columns={allocationColumns} data={filteredAllocations} emptyTitle="No allocations" emptyDescription="Create an allocation to assign a slot." />
       )}
 
       {/* Create Slot Modal */}

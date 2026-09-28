@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FolderKanban, CalendarOff } from 'lucide-react';
+import { FolderKanban, CalendarOff, BarChart2 } from 'lucide-react';
 import StatCard from '../../components/ui/StatCard';
 import DataTable from '../../components/ui/DataTable';
 import Badge from '../../components/ui/Badge';
@@ -80,6 +80,9 @@ function EmployeeDashboard() {
         <div className="stats-grid">
           <StatCard icon={FolderKanban} label="Assigned Projects" value={stats.assignedProjects} variant="primary" />
           <StatCard icon={CalendarOff} label="Pending Leaves" value={stats.pendingLeaves} variant="warning" />
+          <Link to={EMPLOYEE_ROUTES.ANALYTICS} style={{ textDecoration: 'none' }}>
+            <StatCard icon={BarChart2} label="My Analytics" value="View" variant="info" />
+          </Link>
         </div>
       ) : null}
 

@@ -30,6 +30,22 @@ export async function changeAdminProjectManager(id, managerId) {
   return data;
 }
 
+// Admin team management
+export async function getAdminProjectTeam(projectId) {
+  const { data } = await api.get(`/admin/projects/${projectId}/employees`);
+  return data;
+}
+
+export async function adminAssignEmployeeToProject(projectId, payload) {
+  const { data } = await api.post(`/admin/projects/${projectId}/employees`, payload);
+  return data;
+}
+
+export async function adminRemoveEmployeeFromProject(projectId, employeeId) {
+  const { data } = await api.delete(`/admin/projects/${projectId}/employees/${employeeId}`);
+  return data;
+}
+
 export async function getManagerProjects() {
   const { data } = await api.get('/manager/projects');
   return data;

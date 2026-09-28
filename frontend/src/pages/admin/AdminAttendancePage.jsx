@@ -1,5 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Search } from 'lucide-react';
 import AttendanceStatusBadge from '../../components/attendance/AttendanceStatusBadge';
+import { AttendanceBreaksCell, WorkModeBadge } from '../../components/attendance/AttendanceBreaksCell';
 import Alert from '../../components/ui/Alert';
 import Button from '../../components/ui/Button';
 import DataTable from '../../components/ui/DataTable';
@@ -9,13 +11,14 @@ import ErrorState from '../../components/common/ErrorState';
 import LoadingState from '../../components/common/LoadingState';
 import { getAdminAttendance } from '../../services/attendanceService';
 import { getErrorMessage } from '../../utils/apiError';
-import { formatDate, formatDateTime } from '../../utils/formatters';
+import { formatDate, formatDateTime, formatTime } from '../../utils/formatters';
 
 function AdminAttendancePage() {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filterDate, setFilterDate] = useState('');
+  const [search, setSearch] = useState('');
 
   const loadAttendance = useCallback(async () => {
     setLoading(true);
@@ -36,6 +39,17 @@ function AdminAttendancePage() {
     loadAttendance();
   }, [loadAttendance]);
 
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return records;
+    return records.filter((r) => {
+      const name = (r.employeeName ?? '').toLowerCase();
+      const code = (r.employeeCode ?? '').toLowerCase();
+      const status = (r.status ?? '').toLowerCase();
+      return name.includes(q) || code.includes(q) || status.includes(q);
+    });
+  }, [records, search]);
+
   const columns = [
     { key: 'employeeCode', header: 'Code' },
     { key: 'employeeName', header: 'Employee' },
@@ -48,6 +62,37 @@ function AdminAttendancePage() {
       key: 'status',
       header: 'Status',
       render: (record) => <AttendanceStatusBadge status={record.status} />,
+    },
+    {
+      key: 'workMode',
+      header: 'Mode',
+      render: (record) => <WorkModeBadge mode={record.workMode} />,
+    },
+    {
+      key: 'checkIn',
+      header: 'Check In',
+      render: (record) => record.checkInTime ?? formatTime(record.checkIn),
+    },
+    {
+      key: 'checkOut',
+      header: 'Check Out',
+      render: (record) => record.checkOutTime ?? formatTime(record.checkOut),
+    },
+    {
+      key: 'totalHours',
+      header: 'Total Hours',
+      render: (record) => (record.totalHours ? `${record.totalHours} hrs` : '—'),
+    },
+    {
+      key: 'breaks',
+      header: 'Break Timings',
+      render: (record) => (
+        <AttendanceBreaksCell
+          breaks={record.breaks}
+          employeeName={record.employeeName}
+          date={record.date}
+        />
+      ),
     },
     {
       key: 'updatedAt',
@@ -67,6 +112,16 @@ function AdminAttendancePage() {
       ) : null}
 
       <div className="filter-bar">
+        <div className="search-input-wrapper">
+          <Search size={16} className="search-icon" />
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Search by employee name, code or status…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
         <Input
           label="Filter by date"
           name="filterDate"
@@ -75,9 +130,9 @@ function AdminAttendancePage() {
           onChange={(event) => setFilterDate(event.target.value)}
           wrapperClassName="toolbar"
         />
-        {filterDate ? (
-          <Button variant="secondary" size="sm" onClick={() => setFilterDate('')}>
-            Clear filter
+        {(filterDate || search) ? (
+          <Button variant="secondary" size="sm" onClick={() => { setFilterDate(''); setSearch(''); }}>
+            Clear filters
           </Button>
         ) : null}
       </div>
@@ -89,7 +144,7 @@ function AdminAttendancePage() {
       ) : (
         <DataTable
           columns={columns}
-          data={records}
+          data={filtered}
           emptyTitle="No attendance records"
           emptyDescription="No attendance records match the selected filter."
         />
