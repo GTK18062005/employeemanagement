@@ -2,11 +2,11 @@ const TOKEN_KEY = 'ems_token';
 const USER_KEY = 'ems_user';
 
 export function getToken() {
-  return sessionStorage.getItem(TOKEN_KEY);
+  return localStorage.getItem(TOKEN_KEY);
 }
 
 export function getUser() {
-  const raw = sessionStorage.getItem(USER_KEY);
+  const raw = localStorage.getItem(USER_KEY);
   if (!raw) {
     return null;
   }
@@ -20,13 +20,13 @@ export function getUser() {
 }
 
 export function setAuth(token, user) {
-  sessionStorage.setItem(TOKEN_KEY, token);
-  sessionStorage.setItem(USER_KEY, JSON.stringify(user));
+  localStorage.setItem(TOKEN_KEY, token);
+  localStorage.setItem(USER_KEY, JSON.stringify(user));
 }
 
 export function clearAuth() {
-  sessionStorage.removeItem(TOKEN_KEY);
-  sessionStorage.removeItem(USER_KEY);
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(USER_KEY);
 }
 
 export function hasToken() {

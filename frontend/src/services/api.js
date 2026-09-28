@@ -11,7 +11,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = sessionStorage.getItem('ems_token');
+  const token = localStorage.getItem('ems_token');
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -30,6 +30,7 @@ api.interceptors.response.use(
     if (status === 401 && !isLoginRequest) {
       clearAuth();
       window.dispatchEvent(new CustomEvent(AUTH_UNAUTHORIZED_EVENT));
+      window.location.href = '/login';
     }
 
     return Promise.reject(error);
