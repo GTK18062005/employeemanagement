@@ -7,7 +7,7 @@ public class ProjectAssignmentCreateRequest {
     @NotNull(message = "Employee ID is required")
     private Long employeeId;
     
-    @NotNull(message = "Assigned date is required field")
+    @NotNull(message = "Assigned date is requiredfield")
     private LocalDate assignedDate;
 
     public Long getEmployeeId() { return employeeId; }
